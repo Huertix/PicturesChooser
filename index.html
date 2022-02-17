@@ -1,0 +1,163 @@
+	<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="bootstrap.min.css">
+
+    <title>LaGraciosa</title>
+  </head>
+  <body>
+
+  	<div class="container">
+  		    <h1>KopiaThor</h1>
+
+	  	<div class="row">
+		    <div class="col-sm">
+  		    <form>
+			  <div class="form-group">
+			    <label for="carpetaorigen">Carpeta Origen</label>
+			    <input type="file" class="form-control-file" id="carpetaorigen" onchange="setOrigin()" webkitdirectory directory multiple>
+			  </div>
+  			  <div class="form-group">
+			    <input type="text" class="form-control-file" id='carpetaorigenpath' disabled>
+			  </div>
+			  <hr>
+			  <div class="form-group">
+			    <label for="lista">Lista</label>
+			    <input type="file" class="form-control-file" id="lista" onchange="updateLista()">
+			  </div>
+			  <output id="list"></output>
+			</form>
+		    </div>
+		    <div class="col-sm">
+		          		  <div class="form-group">
+			    <label for="listaTextarea">Lista ficheros</label>
+			    <textarea class="form-control" id="listaTextarea" rows="20"></textarea>
+
+			    <button type="button" class="btn btn-primary" onclick="saveTextarea()">Guardar</button>
+			    <button type="button" class="btn btn-warning" onclick="sortList()">Ordenar</button>
+			  </div>
+		    </div>
+	    </div>
+
+
+	</div>
+
+
+
+	<!-- </div> -->
+
+    <script src="jquery-3.3.1.min.js"></script>
+    <script src="popper.min.js"></script>
+    <script src="bootstrap.min.js"></script>
+
+	
+    <script type="text/javascript">
+
+    	function sortList() {
+
+    		let text = sortTheTextArea()
+
+    		$('#listaTextarea').val(text);
+
+    	}
+
+   
+    	function setOrigin() {
+			let listaFiles = $('#carpetaorigen').prop('files');
+			let origin = listaFiles[0].webkitRelativePath.split('/')[0];
+			$('#carpetaorigenpath').val(origin);
+
+
+			for (var i = 0, f; f = listaFiles[i]; i++) {
+
+				if (!f.type.match('image.*')) {
+					continue;
+				}
+
+				var reader = new FileReader();
+
+			      // Closure to capture the file information.
+				reader.onload = (function(theFile) {
+					return function(e) {
+						// Render thumbnail.
+						var span = document.createElement('span');
+						span.innerHTML = [
+						'<img class="thumb" style="max-width: 100px;" src="', e.target.result, '" title="', theFile.name, '" onclick="addFileName(this)"/>'].join('');
+						document.getElementById('list').insertBefore(span, null);
+					};
+				})(f);
+
+				// Read in the image file as a data URL.
+				reader.readAsDataURL(f);
+			}
+			
+
+
+    	}
+
+    	function addFileName(element) {
+    		console.log(element.title);
+    		$('#listaTextarea').val($('#listaTextarea').val()+element.title+'\n');
+    	}
+
+    	function updateLista() {
+    		let listaFile = $('#lista').prop('files');
+
+    		// console.log(listaFile);
+
+    		  var reader = new FileReader();
+			  reader.onload = function(progressEvent){
+
+			  	// let ar = this.result.replace(/(\r\n|\n|\r)/gm, "");
+
+			  	$('#listaTextarea').val('');
+			  	let ar = this.result.split(/\n/).sort();
+
+			  	for (let i=0; i < ar.length; i++) {
+			  		$('#listaTextarea').val($('#listaTextarea').val()+ar[i]+'\n'); 
+			  	}
+
+			  };
+			  reader.readAsText(listaFile[0]);
+		}
+
+
+		function sortTheTextArea() {
+		    var text = document.getElementById("listaTextarea").value;
+
+			let ar = text.split(/\n/).sort();
+			text = ar.join('\n');
+
+			return text;
+		}
+
+
+
+    	function saveTextarea() {
+		    var text = document.getElementById("listaTextarea").value;
+
+			let ar = text.split(/\n/).sort();
+			text = ar.join('\n');
+
+		    var blob = new Blob([text], { type: "text/plain"});
+		    var anchor = document.createElement("a");
+		    anchor.download = "lista.txt";
+		    anchor.href = window.URL.createObjectURL(blob);
+		    anchor.target ="_blank";
+		    anchor.style.display = "none"; // just to be safe!
+		    document.body.appendChild(anchor);
+		    anchor.click();
+		    document.body.removeChild(anchor);
+    	}
+
+
+
+    </script>
+
+  </body>
+</html>
