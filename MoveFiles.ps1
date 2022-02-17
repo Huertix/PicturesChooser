@@ -1,14 +1,17 @@
-$_SourcePath = "D:\BLOG\Power Shell\Examples\Source File Path"
-$_DestinationPath = "D:\BLOG\Power Shell\Examples\Destination File Path"
-$_list = ".\list.txt"
+$_SourcePath = "C:\Users\erikk\Desktop\test1"
+$_DestinationPath = "C:\Users\erikk\Desktop\test2"
+$_list = "C:\Users\erikk\Desktop\lista.txt"
 
 foreach($line in Get-Content $_list) {
     if($line -match $regex){
         # Work here
     }
 
-    if (Test-Path -Path $_SourcePath + $line  -PathType Leaf) {
-    	Move-item –path $_SourcePath + $line –destination $_DestinationPath + $line
+    Write-Output -InputObject  (Test-Path -Path $_SourcePath+"\"+$line  -PathType Leaf)
+    Write-Output -InputObject $_SourcePath\$line
+    if (Test-Path -Path $_SourcePath\$line  -PathType Leaf) {
+        Write-Output -InputObject "Moving....."
+        Write-Output -InputObject $_SourcePath+$line
+    	Move-item –path $_SourcePath\$line –destination $_DestinationPath\$line
     }
 }
- 
